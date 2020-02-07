@@ -697,6 +697,7 @@ public class QuickShop extends JavaPlugin {
    * @throws RuntimeException The error message, use this to create a BootError.
    */
   private void runtimeCheck(QuickShop shop) throws RuntimeException {
+    if (true) return; // Disable runtime check
     if (Util.isClassAvailable("org.maxgamer.quickshop.Util.NMS")) {
       getLogger()
           .severe(
