@@ -521,8 +521,10 @@ public class QuickShop extends JavaPlugin {
       e.printStackTrace();
     }
     MsgUtil.loadItemi18n();
-    MsgUtil.loadEnchi18n();
-    MsgUtil.loadPotioni18n();
+    if (!"v1_12_R1".equals(Util.getNMSVersion())) {
+        MsgUtil.loadEnchi18n();
+        MsgUtil.loadPotioni18n();
+    }
 
     /* Check the running envs is support or not. */
     try {

@@ -144,7 +144,13 @@ public class QuickShopLogger extends PluginLogger {
       info("Your server do not support Ansi, colour formatter will not be applied.");
     }
 
-    Class<?> main = Class.forName("org.bukkit.craftbukkit.Main"); // Not in subversion
+    Class<?> main = null;
+    try {
+        main = Class.forName("org.bukkit.craftbukkit.Main"); // Not in subversion
+    } catch (ClassNotFoundException e) {
+        main = Class.forName("org.bukkit.craftbukkit." + Util.getNMSVersion() + ".Main"); // CatServer
+    }
+
     Field useJline = main.getField("useJline");
     hasJline = useJline.getBoolean(null);
     if (!hasJline) {
