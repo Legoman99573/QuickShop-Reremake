@@ -8,7 +8,7 @@ QuickShop-Reremake make by Minecraft Server SunnySide Community from https://git
 QuickShop-ReReremake is a fork support CatServer and removed shit code
 
 ## Support
-Open a new issue here: https://github.com/Ghost-chu/QuickShop-Reremake/issues
+Open a new issue here: https://github.com/Luohuayu/QuickShop-Reremake/issues
 
 ## Features
 - Easy to use
