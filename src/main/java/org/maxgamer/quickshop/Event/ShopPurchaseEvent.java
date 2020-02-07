@@ -1,6 +1,6 @@
 /*
  * This file is a part of project QuickShop, the name is ShopPurchaseEvent.java
- * Copyright (C) Ghost_chu <https://github.com/Ghost-chu>
+ * Copyright (C) Ghost_chu <https://github.com/Luohuayu>
  * Copyright (C) Bukkit Commons Studio and contributors
  *
  * This program is free software: you can redistribute it and/or modify it

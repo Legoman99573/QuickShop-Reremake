@@ -1,6 +1,6 @@
 /*
  * This file is a part of project QuickShop, the name is QuickShopLogger.java Copyright (C)
- * Ghost_chu <https://github.com/Ghost-chu> Copyright (C) Bukkit Commons Studio and contributors
+ * Ghost_chu <https://github.com/Luohuayu> Copyright (C) Bukkit Commons Studio and contributors
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
