@@ -1,6 +1,6 @@
 /*
  * This file is a part of project QuickShop, the name is QuickShopLogger.java Copyright (C)
- * Ghost_chu <https://github.com/Ghost-chu> Copyright (C) Bukkit Commons Studio and contributors
+ * Ghost_chu <https://github.com/Luohuayu> Copyright (C) Bukkit Commons Studio and contributors
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU Lesser General Public License as published by the Free Software Foundation, either version 3
@@ -144,7 +144,13 @@ public class QuickShopLogger extends PluginLogger {
       info("Your server do not support Ansi, colour formatter will not be applied.");
     }
 
-    Class<?> main = Class.forName("org.bukkit.craftbukkit.Main"); // Not in subversion
+    Class<?> main = null;
+    try {
+        main = Class.forName("org.bukkit.craftbukkit.Main"); // Not in subversion
+    } catch (ClassNotFoundException e) {
+        main = Class.forName("org.bukkit.craftbukkit." + Util.getNMSVersion() + ".Main"); // CatServer
+    }
+
     Field useJline = main.getField("useJline");
     hasJline = useJline.getBoolean(null);
     if (!hasJline) {

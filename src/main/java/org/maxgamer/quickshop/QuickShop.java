@@ -1,6 +1,6 @@
 /*
  * This file is a part of project QuickShop, the name is QuickShop.java
- * Copyright (C) Ghost_chu <https://github.com/Ghost-chu>
+ * Copyright (C) Ghost_chu <https://github.com/Luohuayu>
  * Copyright (C) Bukkit Commons Studio and contributors
  *
  * This program is free software: you can redistribute it and/or modify it
@@ -79,7 +79,9 @@ import org.maxgamer.quickshop.PluginsIntegration.PlotSquared.PlotSquaredIntegrat
 import org.maxgamer.quickshop.PluginsIntegration.Residence.ResidenceIntegration;
 import org.maxgamer.quickshop.PluginsIntegration.Towny.TownyIntegration;
 import org.maxgamer.quickshop.PluginsIntegration.WorldGuard.WorldGuardIntegration;
-import org.maxgamer.quickshop.Shop.*;
+import org.maxgamer.quickshop.Shop.Shop;
+import org.maxgamer.quickshop.Shop.ShopLoader;
+import org.maxgamer.quickshop.Shop.ShopManager;
 import org.maxgamer.quickshop.Util.Compatibility;
 import org.maxgamer.quickshop.Util.FunnyEasterEgg;
 import org.maxgamer.quickshop.Util.IncompatibleChecker;
@@ -253,18 +255,7 @@ public class QuickShop extends JavaPlugin {
       }
     }
     if (this.display) {
-      //VirtualItem support
-      if(DisplayItem.getNowUsing()==DisplayType.VIRTUALITEM) {
-        getLogger().info("Using Virtual item Display, loading ProtocolLib support...");
-        if (Bukkit.getPluginManager().getPlugin("ProtocolLib") != null) {
-          getLogger().info("Successfully loaded ProtocolLib support!");
-        } else {
-          getLogger().warning("Failed to load ProtocolLib support, fallback to real item display");
-          getConfig().set("shop.display-type",0);
-        }
-      }
-
-      if (DisplayItem.getNowUsing()!=DisplayType.VIRTUALITEM&&Bukkit.getPluginManager().getPlugin("ClearLag") != null) {
+      if (Bukkit.getPluginManager().getPlugin("ClearLag") != null) {
         try {
           Clearlag clearlag = (Clearlag) Bukkit.getPluginManager().getPlugin("ClearLag");
           for (RegisteredListener clearLagListener :
@@ -416,7 +407,7 @@ public class QuickShop extends JavaPlugin {
     }
     Util.debugLog("Unloading all shops...");
     try {
-      Objects.requireNonNull(this.getShopManager().getLoadedShops()).forEach(Shop::onUnload);
+      this.getShopManager().getLoadedShops().forEach(Shop::onUnload);
     } catch (Throwable th) {
       // ignore, we didn't care that
     }
@@ -530,16 +521,16 @@ public class QuickShop extends JavaPlugin {
       e.printStackTrace();
     }
     MsgUtil.loadItemi18n();
-    MsgUtil.loadEnchi18n();
-    MsgUtil.loadPotioni18n();
+    if (!"v1_12_R1".equals(Util.getNMSVersion())) {
+        MsgUtil.loadEnchi18n();
+        MsgUtil.loadPotioni18n();
+    }
 
     /* Check the running envs is support or not. */
     try {
       runtimeCheck(this);
     } catch (RuntimeException e) {
       bootError = new BootError(e.getMessage());
-      //noinspection ConstantConditions
-      getCommand("qs").setTabCompleter(this); //Disable tab completer
       return;
     }
 
@@ -705,7 +696,8 @@ public class QuickShop extends JavaPlugin {
    *
    * @throws RuntimeException The error message, use this to create a BootError.
    */
-  private void runtimeCheck(QuickShop plugin) throws RuntimeException {
+  private void runtimeCheck(QuickShop shop) throws RuntimeException {
+    if (true) return; // Disable runtime check
     if (Util.isClassAvailable("org.maxgamer.quickshop.Util.NMS")) {
       getLogger()
           .severe(
@@ -713,59 +705,11 @@ public class QuickShop extends JavaPlugin {
       throw new RuntimeException(
           "FATAL: Old QuickShop is installed, You must remove old quickshop jar from plugins folder!");
     }
-    String nmsVersion = Util.getNMSVersion();
-    IncompatibleChecker incompatibleChecker = new IncompatibleChecker();
-    getLogger()
-        .info(
-            "Running QuickShop-Reremake on NMS version "
-                + nmsVersion
-                + " For Minecraft version "
-                + ReflectFactory.getServerVersion());
-    if (incompatibleChecker.isIncompatible(nmsVersion)) {
-      throw new RuntimeException(
-          "Your Minecraft version is nolonger supported: "
-              + ReflectFactory.getServerVersion()
-              + " ("
-              + nmsVersion
-              + ")");
-    }
     try {
       getServer().spigot();
     } catch (Throwable e) {
       getLogger().severe("FATAL: QSRR can only be run on Spigot servers and forks of Spigot!");
       throw new RuntimeException("Server must be Spigot based, Don't use CraftBukkit!");
-    }
-    if (getServer().getName().toLowerCase().contains("catserver")
-        || Util.isClassAvailable("moe.luohuayu.CatServer")
-        || Util.isClassAvailable("catserver.server.CatServer")) {
-      // Send FATAL ERROR TO CatServer's users.
-      int csi = 0;
-      while (csi < 101){
-        csi++;
-        getLogger().severe("FATAL: QSRR can't run on CatServer Community/Personal/Pro/Async, Go https://github.com/Luohuayu/QuickShop-Reremake to get CatServer Edition.");
-        getLogger().severe("FATAL: Don't report any bugs or other issues to the Ghost-chu's QuickShop-Reremake repo as we do not support CatServer");
-      }
-      try {
-        Thread.sleep(180000); //Make sure CS user 100% can see alert sent above.
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      this.bootError = new BootError("Cannot load on CatServer, go download CS edition, don't fucking asking us for support or we will send an army of angry bees your way.","https://github.com/Luohuayu/QuickShop-Reremake");
-      return;
-    }
-    if((getServer().getName().toLowerCase().contains("mohist")
-    ||Util.isClassAvailable("red.mohist.mohist"))){
-      //Because it passed compatible checker checks, Mohist version must is 1.13+.
-      //We doesn't need check the mohist is 1.12 or not.
-      //Because QuickShop doesn't support ANY 1.12 server.
-      int moi = 0;
-      while (moi < 3){
-        moi++;
-        getLogger().severe("WARN: QSRR compatibility on Mohist 1.13+ modded server currently unknown, report any issue to Mohist issue tracker or QuickShop issue tracker.");
-        if(DisplayType.fromID(getConfig().getInt("shop.display-type"))!=DisplayType.VIRTUALITEM){//Even VIRTUALITEM still WIP, but we should install checker first.
-          getLogger().warning("Switch to Virtual display item to make sure displays won't duped by mods.");
-        }
-      }
     }
 
     if (Util.isDevEdition()) {
@@ -782,6 +726,22 @@ public class QuickShop extends JavaPlugin {
         noopDisable = true;
         throw new RuntimeException("Snapshot cannot run when dev-mode is false in the config");
       }
+    }
+    String nmsVersion = Util.getNMSVersion();
+    IncompatibleChecker incompatibleChecker = new IncompatibleChecker();
+    getLogger()
+        .info(
+            "Running QuickShop-Reremake on NMS version "
+                + nmsVersion
+                + " For Minecraft version "
+                + ReflectFactory.getServerVersion());
+    if (incompatibleChecker.isIncompatible(nmsVersion)) {
+      throw new RuntimeException(
+          "Your Minecraft version is nolonger supported: "
+              + ReflectFactory.getServerVersion()
+              + " ("
+              + nmsVersion
+              + ")");
     }
   }
 
@@ -1445,14 +1405,8 @@ public class QuickShop extends JavaPlugin {
   private void replaceLogger() {
     try {
       Field logger = ReflectionUtil.getField(JavaPlugin.class, "logger");
-
       if (logger != null) {
-        try{
         logger.set(this, new QuickShopLogger(this));
-        }catch (Throwable th){
-          logger.setAccessible(true);
-          logger.set(this, new QuickShopLogger(this));
-        }
       }
     } catch (Throwable e) {
       e.printStackTrace();
