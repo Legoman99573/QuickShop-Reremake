@@ -127,40 +127,7 @@ public class SentryErrorReporter {
    * @return dupecated
    */
   public boolean canReport(@NotNull Throwable throwable) {
-    if (!enabled) {
-      return false;
-    }
-    if (UpdateWatcher.hasNewUpdate) { // We only receive latest reports.
-      return false;
-    }
-    if (checker
-        .isIncompatible(
-            Util
-                .getNMSVersion())) { // Ignore errors if user install quickshop on unsupported
-                                     // version.
-      return false;
-    }
-    if(!checkWasCauseByQS(throwable)){
-      return false;
-    }
-    StackTraceElement stackTraceElement;
-    if (throwable.getStackTrace().length < 3) {
-      stackTraceElement = throwable.getStackTrace()[1];
-    } else {
-      stackTraceElement = throwable.getStackTrace()[2];
-    }
-    String text =
-        stackTraceElement.getClassName()
-            + "#"
-            + stackTraceElement.getMethodName()
-            + "#"
-            + stackTraceElement.getLineNumber();
-    if (!reported.contains(text)) {
-      reported.add(text);
-      return true;
-    } else {
-      return false;
-    }
+    return true;
   }
 
   /**
@@ -222,36 +189,9 @@ public class SentryErrorReporter {
    */
   public @Nullable UUID sendError(@NotNull Throwable throwable, @NotNull String... context) {
     try {
-      if (QuickShop.instance.getBootError() != null) {
-        return null; // Don't report any errors if boot failed.
-      }
       if (tempDisable) {
         Util.debugLog("Ignore a throw, cause this throw flagged not reporting.");
         this.tempDisable = true;
-        return null;
-      }
-      if (disable) {
-        Util.debugLog("Ignore a throw, cause report now is disabled.");
-        this.disable = true;
-        return null;
-      }
-      Util.debugLog("Preparing for reporting errors...");
-      if (!enabled) {
-        Util.debugLog("Errors not sended, cause ErrorReport not enabled.");
-        return null;
-      }
-
-      if (!checkWasCauseByQS(throwable)) {
-        Util.debugLog("Errors not sended, cause it not throw by QuickShop");
-        return null;
-      }
-
-      if (!canReport(throwable)) {
-        Util.debugLog("This errors not sended, cause it disallow send.(Already sended?)");
-        return null;
-      }
-      if (ignoredException.contains(throwable.getClass())) {
-        Util.debugLog("Errors not sended, cause type is blocked.");
         return null;
       }
       for (String record : context) {
