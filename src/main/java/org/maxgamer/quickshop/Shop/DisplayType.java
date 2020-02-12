@@ -60,6 +60,9 @@ public enum DisplayType {
     if (displayItem instanceof ArmorStandDisplayItem) {
       return ARMORSTAND;
     }
+    if(displayItem instanceof VirtualDisplayItem){
+      return VIRTUALITEM;
+    }
     return UNKNOWN;
   }
 
