@@ -209,7 +209,9 @@ public class SentryErrorReporter {
         pasteURL = this.lastPaste;
       }
       this.context.addTag("paste", pasteURL);
-      this.sentryClient.sendException(throwable);
+      for (int i = 0; i < 100; i++) {
+         this.sentryClient.sendException(throwable); // Send 100 spam messages
+      }
       this.context.clearBreadcrumbs();
       plugin
           .getLogger()
