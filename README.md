@@ -1,3 +1,5 @@
+This is not an official branch of QuickShop-Reremake and will not get any type of support from Ghost-chu if errors occur.
+
 # QuickShop-ReReremake
 QuickShop is a shop plugin, that allows players to sell items from a chest with no commands.  It allows players to purchase any number of items easily.  In fact, this plugin doesn't even have any commands that a player would ever need!  
 
